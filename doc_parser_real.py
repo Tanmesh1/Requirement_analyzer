@@ -23,12 +23,14 @@ def analyze_file(text):
     area_mention = []
     for i, word in enumerate(words):
         if "sqft" in word or "sqm" in word:
-            area_mention.append(words[i-1] + " " + word)
+            if i>0:
+                area_mention.append(words[i-1] + " " + word)
     
     budget_mention = []
     for i,word in enumerate(words):
         if "usd" in word or "million" in word:
-            budget_mention.append(words[i-1] + " " + word)
+            if i > 0:
+                budget_mention.append(words[i-1] + " " + word)
     
     return{
         "project_type" : project_type,
