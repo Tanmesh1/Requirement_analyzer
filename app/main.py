@@ -2,13 +2,14 @@ from fastapi import FastAPI , UploadFile , File , HTTPException
 from app.services.parser import analyze_file
 from datetime import datetime
 from app.services.ai_agent import analyze_requirements_with_ai
-
+from app.api.auth_routes import router as auth_router
 from app.database import engine
 from app import models
 
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
+app.include_router(auth_router)
 
 @app.get("/")
 def health_check():
