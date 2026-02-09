@@ -3,9 +3,12 @@ from app.services.parser import analyze_file
 from datetime import datetime
 from app.services.ai_agent import analyze_requirements_with_ai
 
-
+from app.database import engine
+from app import models
 
 app = FastAPI()
+
+models.Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 def health_check():
