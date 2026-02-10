@@ -3,6 +3,7 @@ from app.services.parser import analyze_file
 from datetime import datetime
 from app.services.ai_agent import analyze_requirements_with_ai
 from app.api.auth_routes import router as auth_router
+from app.api.documents import router as documents_router
 from app.database import engine
 from app import models
 
@@ -10,7 +11,7 @@ app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
 app.include_router(auth_router)
-
+app.include_router(documents_router)
 @app.get("/")
 def health_check():
     return {"status" : "ok"}

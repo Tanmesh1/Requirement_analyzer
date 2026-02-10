@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from typing import Optional
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer , HTTPBearer , HTTPAuthorizationCredentials 
 from sqlalchemy.orm import Session
 
 from app.database import get_db 
@@ -85,15 +85,18 @@ def verify_access_token(token: str) -> dict:
         raise ValueError("Invalid or Expired Token")
     
 
-oauth2_schema = OAuth2PasswordBearer(tokenUrl="/auth/login")
+#oauth2_schema = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_schema = HTTPBearer()
 
 
 
 
 def get_current_user(
-        token: str = Depends(oauth2_schema),
+        credentials: HTTPAuthorizationCredentials  = Depends(oauth2_schema),
+        #token: str = Depends(oauth2_schema),
         db: Session = Depends(get_db)
 ):
+    token = credentials.credentials
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

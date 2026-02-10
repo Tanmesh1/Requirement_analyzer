@@ -30,3 +30,15 @@ class Token(BaseModel):
 class LoginRequest(BaseModel):
     email : EmailStr
     password: str
+
+
+#-------------------------
+# Document Schema
+#-------------------------
+
+class DocumentResponse(BaseModel):
+    id: int
+    filename: str
+
+    class config:
+        from_attributes = True
