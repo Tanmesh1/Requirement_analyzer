@@ -1,9 +1,16 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
-
+from sqlalchemy import Enum
+import enum
 from app.database import Base
 
+
+class ProcessingStatus(enum.Enum):
+    uploaded = "uploaded"
+    processing = "processing"
+    processed = "processed"
+    failed = "failed"
 
 class User(Base):
     __tablename__ = "users"
@@ -22,11 +29,19 @@ class Document(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     filename = Column(String, nullable=False)
-    content = Column(Text, nullable=False)
+#    content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    status = Column(Enum(ProcessingStatus), default = ProcessingStatus.uploaded, nullable = False)
+    error_message = Column(Text, nullable=True)
 
     user = relationship("User", back_populates="documents")
     analysis = relationship("Analysis", back_populates="document", uselist=False)
+    text = relationship(
+        "DocumentText",
+        back_populates="document",
+        uselist=False,
+        cascade="all, delete"
+    )
 
 
 class Analysis(Base):
@@ -39,3 +54,15 @@ class Analysis(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     document = relationship("Document", back_populates="analysis")
+
+
+class DocumentText(Base):
+    __tablename__ = "document_texts"
+
+    id = Column(Integer, primary_key = True , index = True)
+    text = Column(Text, nullable = False)
+
+
+    document_id = Column(Integer , ForeignKey("documents.id"),nullable=False)
+
+    document = relationship("Document", back_populates="text")
