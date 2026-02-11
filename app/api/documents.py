@@ -76,23 +76,23 @@ async def upload_document(
                 text = chunk
             ))
         db.commit()
-        document.status = ProcessingStatus.processed
+        document.status = ProcessingStatus.processing
         db.commit()
 
-        all_chunks = db.query(models.DocumentChunk).filter(
-            models.DocumentChunk.document_id == document.id
-        ).order_by(models.DocumentChunk.chunk_index).all()
+        # all_chunks = db.query(models.DocumentChunk).filter(
+        #     models.DocumentChunk.document_id == document.id
+        # ).order_by(models.DocumentChunk.chunk_index).all()
 
-        full_text    = " ".join(chunk.text for chunk in all_chunks)
+        # full_text    = " ".join(chunk.text for chunk in all_chunks)
 
-        #Extract structured requirements
+        # #Extract structured requirements
 
-        structured_data = extract_requirements(full_text)
+        # structured_data = extract_requirements(full_text)
 
-        #save JSON  into document
-        document.extracted_data = structured_data
+        # #save JSON  into document
+        # document.extracted_data = structured_data
 
-        db.commit()
+        # db.commit()
 
 
 
@@ -108,4 +108,71 @@ async def upload_document(
         )
 
     return document
+
+@router.post("/{document_id}/analyze")
+def analyze_document(
+    document_id : int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    # Fetch document and validate ownership
+    document = db.query(models.Document).filter(
+        models.Document.id == document_id,
+        models.Document.user_id == current_user.id
+    ).first()
+
+    if not document:
+        raise HTTPException(status_code=404, detail="document not found")
+    
+    if document.status == ProcessingStatus.processed:
+        raise HTTPException(
+            status_code=400,
+            detail="Document already analyzed"
+        )
+    
+    if document.status != ProcessingStatus.processing:
+        raise HTTPException(
+            status_code= 400,
+            detail="Document not ready for analysis"
+        )
+       
+    
+    document.status = ProcessingStatus.processing
+    db.commit()
+
+    try:
+        #fetch chunks
+        chunks = db.query(models.DocumentChunk).filter(
+            models.DocumentChunk.document_id == document.id
+        ).order_by(models.DocumentChunk.chunk_index).all()
+
+        if not chunks:
+            raise ValueError("No chunks found for document")
+        
+        # Merge chunks 
+        full_text = " ".join(chunk.text for chunk in chunks)
+
+        # Run extraction engine
+        structured_data = extract_requirements(full_text)
+        print("Full text length:", len(full_text))
+        print("Structured output:", structured_data)
+
+        document.extracted_data = structured_data
+        document.status = ProcessingStatus.processed
+        db.commit()
+
+        return {
+            "status": "processed",
+            "extracted_data" : structured_data
+        }
+    except Exception as e:
+        print("🔥 REAL ERROR:", repr(e))
+        document.status = ProcessingStatus.failed   
+        document.error_message = str(e)
+        db.commit()
+
+        raise HTTPException(
+            status_code= 400,
+            detail="Document processing failed"
+        )
 
