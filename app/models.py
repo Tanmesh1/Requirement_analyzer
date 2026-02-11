@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import Enum
 import enum
 from app.database import Base
+from sqlalchemy.dialects.postgresql import JSON
 
 
 class ProcessingStatus(enum.Enum):
@@ -33,6 +34,7 @@ class Document(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     status = Column(Enum(ProcessingStatus), default = ProcessingStatus.uploaded, nullable = False)
     error_message = Column(Text, nullable=True)
+    extracted_data = Column(JSON, nullable=True)
 
     user = relationship("User", back_populates="documents")
     analysis = relationship("Analysis", back_populates="document", uselist=False)

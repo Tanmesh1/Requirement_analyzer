@@ -13,6 +13,9 @@ from app.models import ProcessingStatus
 from app.utils.chunkers import chunk_text
 from app.models import DocumentChunk
 
+from app.services.requirement_extractor import extract_requirements
+import json
+
 router = APIRouter(
     prefix="/documents",
     tags= ["Documents"]
@@ -74,6 +77,21 @@ async def upload_document(
             ))
         db.commit()
         document.status = ProcessingStatus.processed
+        db.commit()
+
+        all_chunks = db.query(models.DocumentChunk).filter(
+            models.DocumentChunk.document_id == document.id
+        ).order_by(models.DocumentChunk.chunk_index).all()
+
+        full_text    = " ".join(chunk.text for chunk in all_chunks)
+
+        #Extract structured requirements
+
+        structured_data = extract_requirements(full_text)
+
+        #save JSON  into document
+        document.extracted_data = structured_data
+
         db.commit()
 
 
