@@ -10,6 +10,8 @@ from app.models import DocumentText
 from app.utils.text import normalize_text
 from app.utils.pdf import extract_text_from_pdf
 from app.models import ProcessingStatus
+from app.utils.chunkers import chunk_text
+from app.models import DocumentChunk
 
 router = APIRouter(
     prefix="/documents",
@@ -60,7 +62,19 @@ async def upload_document(
         db.add(document_text)
         document.status = ProcessingStatus.processed
         db.commit()
+        db.refresh(document_text)
         
+        chunks = chunk_text(normalized)
+
+        for idx, chunk in chunks:
+            db.add(DocumentChunk(
+                document_id = document.id,
+                chunk_index = idx,
+                text = chunk
+            ))
+        db.commit()
+        document.status = ProcessingStatus.processed
+        db.commit()
 
 
 
