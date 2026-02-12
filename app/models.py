@@ -48,16 +48,16 @@ class Document(Base):
     )
 
 
-class Analysis(Base):
-    __tablename__ = "analyses"
+# class Analysis(Base):
+#     __tablename__ = "analyses"
 
-    id = Column(Integer, primary_key=True, index=True)
-    document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
-    analysis_json = Column(Text, nullable=False)
-    pdf_path = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+#     id = Column(Integer, primary_key=True, index=True)
+#     document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
+#     analysis_json = Column(Text, nullable=False)
+#     pdf_path = Column(String, nullable=True)
+#     created_at = Column(DateTime, default=datetime.utcnow)
 
-    document = relationship("Document", back_populates="analysis")
+#     document = relationship("Document", back_populates="analysis")
 
 
 class DocumentText(Base):
