@@ -13,6 +13,7 @@ from app.models import ProcessingStatus
 from app.utils.chunkers import chunk_text
 from app.models import DocumentChunk
 
+from app.services.ai_agent import DocumentAI
 from app.services.requirement_extractor import extract_requirements
 import json
 
@@ -63,7 +64,7 @@ async def upload_document(
         )
 
         db.add(document_text)
-        document.status = ProcessingStatus.processed
+        document.status = ProcessingStatus.processing
         db.commit()
         db.refresh(document_text)
         
@@ -152,10 +153,18 @@ def analyze_document(
         # Merge chunks 
         full_text = " ".join(chunk.text for chunk in chunks)
 
-        # Run extraction engine
-        structured_data = extract_requirements(full_text)
-        print("Full text length:", len(full_text))
-        print("Structured output:", structured_data)
+        # # Run extraction engine
+        # structured_data = extract_requirements(full_text)
+
+        # document.extracted_data = structured_data
+        # document.status = ProcessingStatus.processed
+        # db.commit()
+        print(full_text)
+
+        # AI LAYER CALL
+        ai = DocumentAI()
+        structured_data = ai.analyze_document(full_text)
+        
 
         document.extracted_data = structured_data
         document.status = ProcessingStatus.processed
@@ -169,7 +178,7 @@ def analyze_document(
         print("🔥 REAL ERROR:", repr(e))
         document.status = ProcessingStatus.failed   
         document.error_message = str(e)
-        db.commit()
+        db.commit() 
 
         raise HTTPException(
             status_code= 400,

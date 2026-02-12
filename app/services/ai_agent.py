@@ -1,3 +1,24 @@
+from app.services.requirement_extractor import extract_requirements
+
+class DocumentAI:
+    def __init__(self):
+        pass
+
+    def analyze_document(self,full_text: str) -> dict:
+        """
+        Main intelligence entry point.
+        Can later call LLM, embedding, hybrid pipelines etc.
+        """
+
+        if not full_text or not full_text.strip():
+            raise ValueError("Empty document text")
+        
+        structured = extract_requirements(full_text)
+
+        return structured
+
+
+
 def analyze_requirements_with_ai(text: str) -> dict:
     """
         Mock AI reasoning function.

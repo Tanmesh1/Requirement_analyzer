@@ -5,6 +5,7 @@ from sqlalchemy import Enum
 import enum
 from app.database import Base
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.sql import func
 
 
 class ProcessingStatus(enum.Enum):
@@ -35,6 +36,7 @@ class Document(Base):
     status = Column(Enum(ProcessingStatus), default = ProcessingStatus.uploaded, nullable = False)
     error_message = Column(Text, nullable=True)
     extracted_data = Column(JSON, nullable=True)
+    clean_requirements = Column(Text, nullable=True)
 
     user = relationship("User", back_populates="documents")
     analysis = relationship("Analysis", back_populates="document", uselist=False)
@@ -79,6 +81,9 @@ class DocumentChunk(Base):
     text = Column(Text,nullable=False)
 
     document = relationship("Document")
+
+
+
 
 
 

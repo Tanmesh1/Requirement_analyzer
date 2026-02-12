@@ -42,3 +42,15 @@ class DocumentResponse(BaseModel):
 
     class config:
         from_attributes = True
+
+
+#-------------------------
+# Q&A Schema
+#-------------------------
+
+class QuestionRequest(BaseModel):
+    question: str
+
+class QuestionResponse(BaseModel):
+    answer: str
+    
