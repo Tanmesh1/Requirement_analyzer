@@ -34,12 +34,22 @@ class Document(Base):
 #    content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     status = Column(Enum(ProcessingStatus), default = ProcessingStatus.uploaded, nullable = False)
+    
+    # --- OLD CODE ---
+    # error_message = Column(Text, nullable=True)
+    # extracted_data = Column(JSON, nullable=True)
+    # clean_requirements = Column(Text, nullable=True)
+    # --- NEW CODE ---
+    domain = Column(String, default="architecture", nullable=False)
     error_message = Column(Text, nullable=True)
     extracted_data = Column(JSON, nullable=True)
     clean_requirements = Column(Text, nullable=True)
+    # full JSON result returned by LLM analysis (structured + metadata)
+    analysis_result = Column(JSON, nullable=True)
+
 
     user = relationship("User", back_populates="documents")
-    analysis = relationship("Analysis", back_populates="document", uselist=False)
+   # analysis = relationship("Analysis", back_populates="document", uselist=False)
     text = relationship(
         "DocumentText",
         back_populates="document",

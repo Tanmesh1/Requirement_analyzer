@@ -10,5 +10,6 @@ def chunk_text(text: str,chunk_size: int = 500,overlap: int = 50):
         chunks.append((index,chunk))
         index += 1
         start += chunk_size - overlap
-    
+
+    # print("hii chunks:", chunks)
     return chunks

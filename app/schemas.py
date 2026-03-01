@@ -39,8 +39,14 @@ class LoginRequest(BaseModel):
 class DocumentResponse(BaseModel):
     id: int
     filename: str
+    status: str | None = None
+    domain: str | None = None
+    extracted_data: dict | None = None
+    clean_requirements: str | None = None
+    # full LLM analysis (structured data, possibly other fields)
+    analysis: dict | None = None
 
-    class config:
+    class Config:
         from_attributes = True
 
 
