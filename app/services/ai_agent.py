@@ -1,16 +1,13 @@
 from app.services.requirement_extractor import extract_requirements
 import requests
 from typing import Dict
-<<<<<<< HEAD
 import json
 import re
-=======
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
+
 
 LM_STUDIO_URL = "http://127.0.0.1:1234/v1/chat/completions"
 MODEL_NAME = "mistralai/mistral-small-3.2"
 
-<<<<<<< HEAD
 # --- prompt templates -----------------------------------------------------
 MASTER_PROMPT = (
     "You are an advanced domain-aware consulting intelligence engine.\n\n"
@@ -225,7 +222,6 @@ class LLMRequirementRefiner:
         )
         system_prompt = (
             f"{role_description}\n\n"
-=======
 
 class LLMRequirementRefiner:
     def __init__(self):
@@ -240,7 +236,6 @@ class LLMRequirementRefiner:
 
         system_prompt = (
              "You are a senior architectural consultant.\n\n"
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
             "You will receive messy client requirements.\n"
             "Your task:\n"
             "1. Rewrite them professionally\n"
@@ -253,7 +248,6 @@ class LLMRequirementRefiner:
             "3. Do NOT hallucinate information\n"
             "4. Be concise, clear, and professional\n"
         )
-<<<<<<< HEAD
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": raw_text},
@@ -315,7 +309,6 @@ class DocumentAI:
             else:
                 out[k] = v
         return out
-=======
 
         payload = {
              "model": self.model,
@@ -338,25 +331,19 @@ class DocumentAI:
 class DocumentAI:
     def __init__(self):
         pass
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
 
     def analyze_document(self,full_text: str) -> dict:
         """
         Main intelligence entry point.
-<<<<<<< HEAD
         Runs the multi-stage LLM analysis and also produces a cleaned text
         representation.  Keeps the rule-based extractor as a fallback.
 
         If the text is very large we split it into multiple chunks and analyze
         each separately to avoid exceeding token limits; results are merged.
-=======
-        Can later call LLM, embedding, hybrid pipelines etc.
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
         """
 
         if not full_text or not full_text.strip():
             raise ValueError("Empty document text")
-<<<<<<< HEAD
 
         # handle potential token limits by chunking on character count
         if len(full_text) > self._MAX_CHARS:
@@ -386,12 +373,11 @@ class DocumentAI:
             "refine_text": clean_text,
             "legacy_structured": structured,
         }
-=======
         
         structured = extract_requirements(full_text)
 
         return structured
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
+
 
 
 

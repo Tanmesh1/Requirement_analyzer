@@ -1,13 +1,8 @@
-<<<<<<< HEAD
 # --- OLD CODE ---
 # from fastapi import APIRouter, Depends , UploadFile , File , HTTPException, BackgroundTasks
 # --- NEW CODE ---
 from fastapi import APIRouter, Depends , UploadFile , File , HTTPException, BackgroundTasks, Form
-=======
-from fastapi import APIRouter, Depends , UploadFile , File , HTTPException
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
 from sqlalchemy.orm import Session
-
 from app.database import get_db
 from app.auth import get_current_user
 from app import models
@@ -19,7 +14,6 @@ from app.utils.pdf import extract_text_from_pdf
 from app.models import ProcessingStatus
 from app.utils.chunkers import chunk_text
 from app.models import DocumentChunk
-<<<<<<< HEAD
 from fastapi.responses import FileResponse
 
 from app.services.embedding_services import EmbeddingService
@@ -29,18 +23,13 @@ from app.services.pdf_generator import generate_requirements_pdf
 from app.services.ai_agent import DocumentAI
 from app.services.requirement_extractor import extract_requirements
 from app.services.background_task import process_document_async
-=======
 
-from app.services.ai_agent import DocumentAI
-from app.services.requirement_extractor import extract_requirements
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
 import json
 
 router = APIRouter(
     prefix="/documents",
     tags= ["Documents"]
 )
-<<<<<<< HEAD
 # #--------------Upload route ------------------
 # @router.post("/upload", response_model=DocumentResponse)
 # async def upload_document(
@@ -167,12 +156,7 @@ async def upload_document(
     background_tasks : BackgroundTasks,
     file: UploadFile = File(...),
     domain: str = Form("architecture"),
-=======
 
-@router.post("/upload", response_model=DocumentResponse)
-async def upload_document(
-    file: UploadFile = File(...),
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
@@ -181,7 +165,6 @@ async def upload_document(
 
     #content = await extract_text(file)
 
-<<<<<<< HEAD
     # --- OLD CODE ---
     # document = models.Document(
     #     filename = file.filename,
@@ -194,12 +177,6 @@ async def upload_document(
         user_id = current_user.id,
         status = ProcessingStatus.uploaded,
         domain = domain
-=======
-    document = models.Document(
-        filename = file.filename,
-        user_id = current_user.id,
-        status = ProcessingStatus.uploaded
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
     )
    
     db.add(document)
@@ -231,7 +208,6 @@ async def upload_document(
         db.commit()
         db.refresh(document_text)
         
-<<<<<<< HEAD
         background_tasks.add_task(
             process_document_async,
             db,
@@ -239,7 +215,6 @@ async def upload_document(
         )
 
         return document
-=======
         chunks = chunk_text(normalized)
 
         for idx, chunk in chunks:
@@ -266,7 +241,7 @@ async def upload_document(
         # document.extracted_data = structured_data
 
         # db.commit()
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
+
 
 
 
@@ -281,11 +256,6 @@ async def upload_document(
             detail = "Document Processing Failed"
         )
 
-<<<<<<< HEAD
-=======
-    return document
-
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
 @router.post("/{document_id}/analyze")
 def analyze_document(
     document_id : int,
@@ -306,11 +276,7 @@ def analyze_document(
             status_code=400,
             detail="Document already analyzed"
         )
-<<<<<<< HEAD
     print(document.status)
-=======
-    
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
     if document.status != ProcessingStatus.processing:
         raise HTTPException(
             status_code= 400,
@@ -342,7 +308,6 @@ def analyze_document(
         print(full_text)
 
         # AI LAYER CALL
-<<<<<<< HEAD
         # --- OLD CODE ---
         # ai = DocumentAI()
         # --- NEW CODE ---
@@ -364,7 +329,6 @@ def analyze_document(
             "analysis": result,
             "extracted_data" : result["structured_data"],
             "clean_requirements" : result["refine_text"]
-=======
         ai = DocumentAI()
         structured_data = ai.analyze_document(full_text)
         
@@ -376,7 +340,6 @@ def analyze_document(
         return {
             "status": "processed",
             "extracted_data" : structured_data
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
         }
     except Exception as e:
         print("🔥 REAL ERROR:", repr(e))
@@ -389,7 +352,6 @@ def analyze_document(
             detail="Document processing failed"
         )
 
-<<<<<<< HEAD
 
 @router.get("/{document_id}/download")
 def download_document(
@@ -466,5 +428,4 @@ def ask_document(
     result = rag.ask(question)
 
     return result
-=======
->>>>>>> 4efc8fe8579685c2241a39edbde6ddf18fd84c1f
+
